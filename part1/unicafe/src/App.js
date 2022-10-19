@@ -1,0 +1,50 @@
+import { useState } from 'react'
+
+const H1 = (props) => {
+  return (
+      <h1>{props.text}</h1>
+  )
+}
+
+const Button = (props) => {
+  return (
+    <button onClick={props.onClick}>
+      {props.text}
+    </button>
+  )
+}
+
+const Statistic = (props) => {
+  return (
+    <p>{props.text} {props.clicks}</p>
+  )
+}
+
+const App = () => {
+  // save clicks of each button to its own state
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
+
+  const increaseGood = () => setGood(good + 1)
+  const increaseNeutral = () => setNeutral(neutral + 1)
+  const increaseBad = () => setBad(bad + 1)
+
+  return (
+    <div>
+      <H1 text='Give feedback' />
+
+      <Button text='good' onClick={increaseGood} />
+      <Button text='neutral' onClick={increaseNeutral} />
+      <Button text='bad' onClick={increaseBad} />
+
+      <H1 text='Statistics' />
+
+      <Statistic text='good' clicks={good} />
+      <Statistic text='neutral' clicks={neutral} />
+      <Statistic text='bad' clicks={bad} />
+    </div>
+  )
+}
+
+export default App

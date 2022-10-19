@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const H1 = (props) => {
   return (
-      <h1>{props.text}</h1>
+    <h1>{props.text}</h1>
   )
 }
 

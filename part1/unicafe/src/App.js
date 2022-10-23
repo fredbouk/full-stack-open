@@ -24,15 +24,21 @@ const Statistics = (props) => {
   const all = props.good + props.neutral + props.bad
   const average = (props.good - props.bad) / all
   const positive = `${props.good / all * 100} %`
+
+  if (all !== 0) {
+    return (
+      <>
+        <Statistic text='good' count={props.good} />
+        <Statistic text='neutral' count={props.neutral} />
+        <Statistic text='bad' count={props.bad} />
+        <Statistic text='all' count={all} />
+        <Statistic text='average' count={average} />
+        <Statistic text='positive' count={positive} />
+      </>
+    )
+  }
   return (
-    <>
-      <Statistic text='good' count={props.good} />
-      <Statistic text='neutral' count={props.neutral} />
-      <Statistic text='bad' count={props.bad} />
-      <Statistic text='all' count={all} />
-      <Statistic text='average' count={average} />
-      <Statistic text='positive' count={positive} />
-    </>
+    <p>No feedback given</p>
   )
 }
 

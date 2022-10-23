@@ -1,44 +1,46 @@
 import { useState } from 'react'
 
-const H1 = (props) => {
-  return (
-    <h1>{props.text}</h1>
-  )
-}
+const H1 = ({ text }) => <h1>{text}</h1>
 
-const Button = (props) => {
+const Button = ({ text, onClick }) => {
   return (
-    <button onClick={props.onClick}>
-      {props.text}
+    <button onClick={onClick}>
+      {text}
     </button>
   )
 }
 
-const Statistic = (props) => {
+const StatisticLine = ({ text, value }) => {
   return (
-    <p>{props.text} {props.count}</p>
+    <tr>
+      <td>{text}</td>
+      <td>{value}</td>
+    </tr>
   )
 }
 
-const Statistics = (props) => {
-  const all = props.good + props.neutral + props.bad
-  const average = (props.good - props.bad) / all
-  const positive = `${props.good / all * 100} %`
+const Statistics = ({ good, neutral, bad }) => {
+  const all = good + neutral + bad
 
-  if (all !== 0) {
+  if (all === 0) {
     return (
-      <>
-        <Statistic text='good' count={props.good} />
-        <Statistic text='neutral' count={props.neutral} />
-        <Statistic text='bad' count={props.bad} />
-        <Statistic text='all' count={all} />
-        <Statistic text='average' count={average} />
-        <Statistic text='positive' count={positive} />
-      </>
+      <p>No feedback given</p>
     )
   }
+
+  const average = ((good - bad) / all)
+  const positive = `${good / all * 100} %`
   return (
-    <p>No feedback given</p>
+    <table>
+      <tbody>
+        <StatisticLine text='good' value={good} />
+        <StatisticLine text='neutral' value={neutral} />
+        <StatisticLine text='bad' value={bad} />
+        <StatisticLine text='all' value={all} />
+        <StatisticLine text='average' value={average} />
+        <StatisticLine text='positive' value={positive} />
+      </tbody>
+    </table>
   )
 }
 
@@ -52,7 +54,7 @@ const App = () => {
   const increaseBad = () => setBad(bad + 1)
 
   return (
-    <div>
+    <>
       <H1 text='Give feedback' />
 
       <Button text='good' onClick={increaseGood} />
@@ -67,7 +69,7 @@ const App = () => {
         bad={bad}
       />
 
-    </div>
+    </>
   )
 }
 

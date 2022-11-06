@@ -1,11 +1,30 @@
 import { useState } from 'react'
 
+const Header = ({ text }) => <h1>{text}</h1>
+
+const Anecdote = ({ anecdote }) => <p>{anecdote}</p>
+
+const Votes = ({ points }) => <p>has {points} votes</p>
+
 const Button = ({ text, onClick }) => {
   return (
     <button onClick={onClick}>
       {text}
     </button>
   )
+}
+
+const MostVotes = ({ points, anecdotes }) => {
+  if (points.some(point => point > 0)) {
+    const index = points.indexOf(Math.max(...points))
+    return (
+      <>
+        <Header text='Anecdote with most votes' />
+        <Anecdote anecdote={anecdotes[index]} />
+        <Votes points={points[index]} />
+      </>
+    )
+  }
 }
 
 const App = () => {
@@ -19,23 +38,25 @@ const App = () => {
     'Programming without an extremely heavy use of console.log is same as if a doctor would refuse to use x-rays or blood tests when diagnosing patients.'
   ]
 
-  const [selected, setSelected] = useState(0)
-  const [points, setPoints] = useState(Array(6).fill(0))
+  const [selectedAnecdote, setSelectedAnecdote] = useState(0)
+  const [points, setPoints] = useState(Array(7).fill(0))
 
-  const getRandomAnecdote = () => setSelected(Math.floor(Math.random() * 7))
+  const getRandomAnecdote = () => setSelectedAnecdote(Math.floor(Math.random() * 7))
 
   const vote = () => {
     const pointsCopy = [...points]
-    pointsCopy[selected] += 1
+    pointsCopy[selectedAnecdote] += 1
     setPoints(pointsCopy)
   }
 
   return (
     <div>
-      <p>{anecdotes[selected]}</p>
-      <p>has {points[selected]} votes</p>
+      <Header text='Anecdote of the day' />
+      <Anecdote anecdote={anecdotes[selectedAnecdote]} />
+      <Votes points={points[selectedAnecdote]} />
       <Button onClick={vote} text='vote' />
       <Button onClick={getRandomAnecdote} text='next anectote' />
+      <MostVotes points={points} anecdotes={anecdotes} />
     </div>
   )
 }

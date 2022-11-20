@@ -1,5 +1,29 @@
 import { useState } from 'react'
 
+const Filter = (props) => {
+  return (
+    <div>
+      filter shown with: <input value={props.filter} onChange={props.handleFilterChange} />
+    </div>
+  )
+}
+
+const PersonForm = (props) => {
+  return (
+    <form onSubmit={props.addName}>
+      <div>
+        name: <input value={props.newName} onChange={props.handleNameChange} />
+      </div>
+      <div>
+        number: <input value={props.newNumber} onChange={props.handleNumberChange} />
+      </div>
+      <div>
+        <button type='submit'>add</button>
+      </div>
+    </form>
+  )
+}
+
 const Person = (props) => {
   return (
     <p>
@@ -8,9 +32,18 @@ const Person = (props) => {
   )
 }
 
+const Persons = (props) => {
+  return (
+    <div>
+      {props.personsToShow.map(person =>
+        <Person key={person.name} person={person} />
+      )}
+    </div>
+  )
+}
+
 const App = () => {
-  const [persons, setPersons] = useState([
-  ])
+  const [persons, setPersons] = useState([])
   const [showAll, setShowAll] = useState(true)
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
@@ -32,7 +65,7 @@ const App = () => {
     event.preventDefault()
 
     if (persons.some(person => person.name === newName)) {
-      window.alert(`${newName} is already added to phonebook`)
+      alert(`${newName} is already added to phonebook`)
       return
     }
 
@@ -56,27 +89,22 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-        filter shown with: <input value={filter} onChange={handleFilterChange} />
-      </div>
+      <Filter
+        filter={filter}
+        handleFilterChange={handleFilterChange}
+      />
       <h2>Add a new</h2>
-      <form onSubmit={addName}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type='submit'>add</button>
-        </div>
-      </form>
+      <PersonForm
+        addName={addName}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <div>
-        {personsToShow.map(person =>
-          <Person key={person.name} person={person} />
-        )}
-      </div>
+      <Persons
+        personsToShow={personsToShow}
+      />
     </div>
   )
 }

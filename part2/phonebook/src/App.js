@@ -3,7 +3,7 @@ import { useState } from 'react'
 const Person = (props) => {
   return (
     <p>
-      {props.person.name}
+      {props.person.name} {props.person.number}
     </p>
   )
 }
@@ -11,6 +11,7 @@ const Person = (props) => {
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
 
   const addName = (event) => {
     event.preventDefault()
@@ -21,14 +22,20 @@ const App = () => {
     }
 
     const nameObject = {
-      name: newName
+      name: newName,
+      number: newNumber
     }
     setPersons(persons.concat(nameObject))
     setNewName('')
+    setNewNumber('')
   }
 
   const handleNameChange = (event) => {
     setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
   }
 
   return (
@@ -37,6 +44,9 @@ const App = () => {
       <form onSubmit={addName}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
+        </div>
+        <div>
+          number: <input value={newNumber} onChange={handleNumberChange} />
         </div>
         <div>
           <button type='submit'>add</button>

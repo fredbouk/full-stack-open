@@ -9,9 +9,24 @@ const Person = (props) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([])
+  const [persons, setPersons] = useState([
+  ])
+  const [showAll, setShowAll] = useState(true)
+  const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+
+  const personsToShow = showAll
+    ? persons
+    : persons.filter(person => {
+      const regexPattern = new RegExp(filter, 'i')
+      return regexPattern.test(person.name)
+    })
+
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value)
+    setShowAll(false)
+  }
 
   const addName = (event) => {
     event.preventDefault()
@@ -41,6 +56,10 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <div>
+        filter shown with: <input value={filter} onChange={handleFilterChange} />
+      </div>
+      <h2>Add a new</h2>
       <form onSubmit={addName}>
         <div>
           name: <input value={newName} onChange={handleNameChange} />
@@ -54,7 +73,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <div>
-        {persons.map(person =>
+        {personsToShow.map(person =>
           <Person key={person.name} person={person} />
         )}
       </div>

@@ -9,6 +9,15 @@ const Filter = (props) => {
   )
 }
 
+const Country = (props) => {
+  return (
+    <>
+      <p>{props.name}</p>
+      <button onClick={() => props.handleClick(props.name)}>show</button>
+    </>
+  )
+}
+
 const Countries = (props) => {
   if (props.filteredCountries.length > 10) {
     return <p>Too many matches, specify another filter</p>
@@ -16,7 +25,11 @@ const Countries = (props) => {
     return (
       <div>
         {props.filteredCountries.map(country =>
-          <p key={country.ccn3}>{country.name.common}</p>
+          <Country
+            key={country.ccn3}
+            name={country.name.common}
+            handleClick={props.handleClick}
+          />
         )}
       </div>
     )
@@ -58,6 +71,10 @@ function App () {
     setFilter(event.target.value)
   }
 
+  const handleClick = (country) => {
+    setFilter(country)
+  }
+
   const filteredCountries = countries.filter(country => {
     const regexPattern = new RegExp(filter, 'i')
     return regexPattern.test(country.name.common)
@@ -71,6 +88,7 @@ function App () {
       />
       <Countries
         filteredCountries={filteredCountries}
+        handleClick={handleClick}
       />
     </>
   )

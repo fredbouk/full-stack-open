@@ -1,56 +1,87 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const Filter = (props) => {
+const Filter = ({ filter, handleFilterChange }) => {
   return (
     <div>
-      Find countries: <input value={props.filter} onChange={props.handleFilterChange} />
+      <b>Find countries:</b> <input value={filter} onChange={handleFilterChange} />
     </div>
   )
 }
 
-const Country = (props) => {
+const Weather = ({ capital }) => {
+  const [weatherData, setWeatherData] = useState('')
+  const apiKey = process.env.REACT_APP_API_KEY
+
+  useEffect(() => {
+    axios
+      .get(`http://api.openweathermap.org/data/2.5/weather?q=${capital}&APPID=${apiKey}&units=metric`)
+      .then(response => {
+        setWeatherData(response.data)
+      })
+  }, [])
+
+  if (weatherData) {
+    return (
+      <div>
+        <p>Temperature: {weatherData.main.temp}° Celsius</p>
+        <img
+          src={`http://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
+          alt={`${weatherData.weather[0].description}`}
+        />
+        <p>Wind: {weatherData.wind.speed} m/s</p>
+      </div>
+    )
+  }
+
+  return <p>Fetching weather data...</p>
+}
+
+const Country = ({ languages, name, capital, area, imgUrl }) => {
+  const languagesArr = Object.values(languages)
   return (
-    <>
-      <p>{props.name}</p>
-      <button onClick={() => props.handleClick(props.name)}>show</button>
-    </>
+    <div>
+      <h1>{name}</h1>
+      <p>Capital: {capital}</p>
+      <p>Area: {area}</p>
+      <h3>Languages:</h3>
+      <ul>
+        {languagesArr.map(language =>
+          <li key={language}>{language}</li>
+        )}
+      </ul>
+      <img
+        src={imgUrl}
+        alt={`${name} flag`}
+      />
+      <h2>Weather in {capital}</h2>
+      <Weather capital={capital} />
+    </div>
   )
 }
 
-const Countries = (props) => {
-  if (props.filteredCountries.length > 10) {
+const Info = ({ filteredCountries, handleClick }) => {
+  if (filteredCountries.length > 10) {
     return <p>Too many matches, specify another filter</p>
-  } else if (props.filteredCountries.length <= 10 && props.filteredCountries.length > 1) {
+  } else if (filteredCountries.length <= 10 && filteredCountries.length > 1) {
     return (
       <div>
-        {props.filteredCountries.map(country =>
-          <Country
-            key={country.ccn3}
-            name={country.name.common}
-            handleClick={props.handleClick}
-          />
+        {filteredCountries.map(country =>
+          <p key={country.ccn3}>
+            {country.name.common} <button onClick={() => handleClick(country.name.common)}>show</button>
+          </p>
         )}
       </div>
     )
-  } else if (props.filteredCountries.length === 1) {
-    const languagesArr = Object.values(props.filteredCountries[0].languages)
+  } else if (filteredCountries.length === 1) {
     return (
-      <div>
-        <h1>{props.filteredCountries[0].name.common}</h1>
-        <p>Capital: {props.filteredCountries[0].capital[0]}</p>
-        <p>Area: {props.filteredCountries[0].area}</p>
-        <h2>Languages:</h2>
-        <ul>
-          {languagesArr.map(language =>
-            <li key={language}>{language}</li>
-          )}
-        </ul>
-        <img
-          src={props.filteredCountries[0].flags.png}
-          alt={`${props.filteredCountries[0].name.common} flag`}
-        />
-      </div>
+      <Country
+        languages={filteredCountries[0].languages}
+        name={filteredCountries[0].name.common}
+        capital={filteredCountries[0].capital[0]}
+        area={filteredCountries[0].area}
+        imgUrl={filteredCountries[0].flags.png}
+      />
     )
   }
 }
@@ -71,14 +102,16 @@ function App () {
     setFilter(event.target.value)
   }
 
-  const handleClick = (country) => {
-    setFilter(country)
+  const handleClick = (countryName) => {
+    setFilter(countryName)
   }
 
-  const filteredCountries = countries.filter(country => {
-    const regexPattern = new RegExp(filter, 'i')
-    return regexPattern.test(country.name.common)
-  })
+  const filteredCountries = filter
+    ? countries.filter(country => {
+      const regexPattern = new RegExp(filter, 'i')
+      return regexPattern.test(country.name.common)
+    })
+    : []
 
   return (
     <>
@@ -86,7 +119,7 @@ function App () {
         filter={filter}
         handleFilterChange={handleFilterChange}
       />
-      <Countries
+      <Info
         filteredCountries={filteredCountries}
         handleClick={handleClick}
       />

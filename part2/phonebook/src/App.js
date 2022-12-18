@@ -25,21 +25,23 @@ const PersonForm = (props) => {
   )
 }
 
-const Person = (props) => {
-  return (
-    <p>
-      {props.person.name} {props.person.number}
-    </p>
-  )
-}
-
 const Persons = (props) => {
   return (
     <div>
       {props.personsToShow.map(person =>
-        <Person key={person.name} person={person} />
+        <Person key={person.id} person={person} handleDeletePerson={props.handleDeletePerson} />
       )}
     </div>
+  )
+}
+
+const Person = (props) => {
+  return (
+    <p>
+      {props.person.name} {props.person.number}
+      &nbsp;
+      <button onClick={() => props.handleDeletePerson(props.person)}>delete</button>
+    </p>
   )
 }
 
@@ -70,6 +72,14 @@ const App = () => {
     setShowAll(false)
   }
 
+  const handleNameChange = (event) => {
+    setNewName(event.target.value)
+  }
+
+  const handleNumberChange = (event) => {
+    setNewNumber(event.target.value)
+  }
+
   const handleAddPerson = (event) => {
     event.preventDefault()
 
@@ -92,12 +102,12 @@ const App = () => {
       })
   }
 
-  const handleNameChange = (event) => {
-    setNewName(event.target.value)
-  }
-
-  const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
+  const handleDeletePerson = (personToRemove) => {
+    if (window.confirm(`Delete ${personToRemove.name} ?`)) {
+      personService
+        .remove(personToRemove.id)
+        .then(setPersons(persons.filter(person => person.id !== personToRemove.id)))
+    }
   }
 
   return (
@@ -118,6 +128,7 @@ const App = () => {
       <h2>Numbers</h2>
       <Persons
         personsToShow={personsToShow}
+        handleDeletePerson={handleDeletePerson}
       />
     </div>
   )

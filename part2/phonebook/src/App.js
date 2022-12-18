@@ -1,49 +1,8 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
-
-const Filter = (props) => {
-  return (
-    <div>
-      filter shown with: <input value={props.filter} onChange={props.handleFilterChange} />
-    </div>
-  )
-}
-
-const PersonForm = (props) => {
-  return (
-    <form onSubmit={props.handleAddPerson}>
-      <div>
-        name: <input value={props.newName} onChange={props.handleNameChange} />
-      </div>
-      <div>
-        number: <input value={props.newNumber} onChange={props.handleNumberChange} />
-      </div>
-      <div>
-        <button type='submit'>add</button>
-      </div>
-    </form>
-  )
-}
-
-const Persons = (props) => {
-  return (
-    <div>
-      {props.personsToShow.map(person =>
-        <Person key={person.id} person={person} handleDeletePerson={props.handleDeletePerson} />
-      )}
-    </div>
-  )
-}
-
-const Person = (props) => {
-  return (
-    <p>
-      {props.person.name} {props.person.number}
-      &nbsp;
-      <button onClick={() => props.handleDeletePerson(props.person)}>delete</button>
-    </p>
-  )
-}
+import Filter from './components/Filter'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -83,11 +42,25 @@ const App = () => {
   const handleAddPerson = (event) => {
     event.preventDefault()
 
-    if (persons.some(person => person.name === newName)) {
-      window.alert(`${newName} is already added to phonebook`)
-      return
+    // update exisiting persons number
+    if (persons.some(person => person.name.toUpperCase() === newName.toUpperCase())) {
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        const personToUpdate = persons.find(person => person.name.toUpperCase() === newName.toUpperCase())
+        const idOfPersonToUpdate = personToUpdate.id
+        const editedPersonToUpdate = { ...personToUpdate, number: newNumber }
+        personService.update(idOfPersonToUpdate, editedPersonToUpdate)
+          .then(updatedPerson => {
+            setPersons(persons.map(person => person.id !== idOfPersonToUpdate ? person : updatedPerson))
+          })
+        setNewName('')
+        setNewNumber('')
+        return
+      } else {
+        return
+      }
     }
 
+    // add new person
     const personObject = {
       name: newName,
       number: newNumber
@@ -119,11 +92,11 @@ const App = () => {
       />
       <h2>Add a new</h2>
       <PersonForm
-        handleAddPerson={handleAddPerson}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}
         handleNumberChange={handleNumberChange}
+        handleAddPerson={handleAddPerson}
       />
       <h2>Numbers</h2>
       <Persons

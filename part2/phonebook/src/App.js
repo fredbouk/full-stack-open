@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
 
 const Filter = (props) => {
   return (
@@ -11,7 +11,7 @@ const Filter = (props) => {
 
 const PersonForm = (props) => {
   return (
-    <form onSubmit={props.handleAddName}>
+    <form onSubmit={props.handleAddPerson}>
       <div>
         name: <input value={props.newName} onChange={props.handleNameChange} />
       </div>
@@ -51,10 +51,10 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
 
@@ -70,7 +70,7 @@ const App = () => {
     setShowAll(false)
   }
 
-  const handleAddName = (event) => {
+  const handleAddPerson = (event) => {
     event.preventDefault()
 
     if (persons.some(person => person.name === newName)) {
@@ -78,15 +78,15 @@ const App = () => {
       return
     }
 
-    const nameObject = {
+    const personObject = {
       name: newName,
       number: newNumber
     }
 
-    axios
-      .post('http://localhost:3001/persons', nameObject)
-      .then(response => {
-        setPersons(persons.concat(response.data))
+    personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
       })
@@ -109,7 +109,7 @@ const App = () => {
       />
       <h2>Add a new</h2>
       <PersonForm
-        handleAddName={handleAddName}
+        handleAddPerson={handleAddPerson}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}

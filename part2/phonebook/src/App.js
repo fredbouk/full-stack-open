@@ -11,7 +11,7 @@ const Filter = (props) => {
 
 const PersonForm = (props) => {
   return (
-    <form onSubmit={props.addName}>
+    <form onSubmit={props.handleAddName}>
       <div>
         name: <input value={props.newName} onChange={props.handleNameChange} />
       </div>
@@ -70,7 +70,7 @@ const App = () => {
     setShowAll(false)
   }
 
-  const addName = (event) => {
+  const handleAddName = (event) => {
     event.preventDefault()
 
     if (persons.some(person => person.name === newName)) {
@@ -82,9 +82,14 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-    setPersons(persons.concat(nameObject))
-    setNewName('')
-    setNewNumber('')
+
+    axios
+      .post('http://localhost:3001/persons', nameObject)
+      .then(response => {
+        setPersons(persons.concat(response.data))
+        setNewName('')
+        setNewNumber('')
+      })
   }
 
   const handleNameChange = (event) => {
@@ -104,7 +109,7 @@ const App = () => {
       />
       <h2>Add a new</h2>
       <PersonForm
-        addName={addName}
+        handleAddName={handleAddName}
         newName={newName}
         handleNameChange={handleNameChange}
         newNumber={newNumber}

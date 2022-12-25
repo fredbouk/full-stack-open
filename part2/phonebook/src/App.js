@@ -1,34 +1,15 @@
 import { useState, useEffect } from 'react'
 import personService from './services/persons'
+import InfoMessage from './components/InfoMessage'
+import ErrorMessage from './components/ErrorMessage'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
-const InfoMessage = ({ message }) => {
-  const infoMessageStyle = {
-    color: 'green',
-    background: 'lightgrey',
-    fontSize: 20,
-    borderStyle: 'solid',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10
-  }
-
-  if (message === '') {
-    return
-  }
-
-  return (
-    <div style={infoMessageStyle}>
-      {message}
-    </div>
-  )
-}
-
 const App = () => {
   const [persons, setPersons] = useState([])
   const [infoMessage, setInfoMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
@@ -81,7 +62,7 @@ const App = () => {
             )
             setTimeout(() => {
               setInfoMessage('')
-            }, 5000)
+            }, 4000)
           })
         return
       } else {
@@ -106,7 +87,7 @@ const App = () => {
         )
         setTimeout(() => {
           setInfoMessage('')
-        }, 5000)
+        }, 4000)
       })
   }
 
@@ -115,6 +96,15 @@ const App = () => {
       personService
         .remove(personToRemove.id)
         .then(setPersons(persons.filter(person => person.id !== personToRemove.id)))
+        .catch(error => {
+          console.log(error)
+          setErrorMessage(
+            `${personToRemove.name} has already been deleted from server`
+          )
+          setTimeout(() => {
+            setErrorMessage('')
+          }, 4000)
+        })
     }
   }
 
@@ -122,6 +112,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <InfoMessage message={infoMessage} />
+      <ErrorMessage message={errorMessage} />
       <Filter
         filter={filter}
         handleFilterChange={handleFilterChange}

@@ -4,8 +4,31 @@ import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
 
+const InfoMessage = ({ message }) => {
+  const infoMessageStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10
+  }
+
+  if (message === '') {
+    return
+  }
+
+  return (
+    <div style={infoMessageStyle}>
+      {message}
+    </div>
+  )
+}
+
 const App = () => {
   const [persons, setPersons] = useState([])
+  const [infoMessage, setInfoMessage] = useState('')
   const [showAll, setShowAll] = useState(true)
   const [filter, setFilter] = useState('')
   const [newName, setNewName] = useState('')
@@ -51,9 +74,15 @@ const App = () => {
         personService.update(idOfPersonToUpdate, editedPersonToUpdate)
           .then(updatedPerson => {
             setPersons(persons.map(person => person.id !== idOfPersonToUpdate ? person : updatedPerson))
+            setNewName('')
+            setNewNumber('')
+            setInfoMessage(
+              `Successfully updated ${updatedPerson.name}'s number`
+            )
+            setTimeout(() => {
+              setInfoMessage('')
+            }, 5000)
           })
-        setNewName('')
-        setNewNumber('')
         return
       } else {
         return
@@ -72,6 +101,12 @@ const App = () => {
         setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
+        setInfoMessage(
+          `Successfully added ${returnedPerson.name} to phonebook`
+        )
+        setTimeout(() => {
+          setInfoMessage('')
+        }, 5000)
       })
   }
 
@@ -86,6 +121,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <InfoMessage message={infoMessage} />
       <Filter
         filter={filter}
         handleFilterChange={handleFilterChange}

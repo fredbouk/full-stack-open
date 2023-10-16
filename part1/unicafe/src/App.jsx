@@ -11,7 +11,7 @@ const Button = (props) => (
 )
 
 const Statistic = (props) => (
-  <p>{props.text}: {props.clicks}</p>
+  <p>{props.text}: {props.stat}</p>
 )
 
 const App = () => {
@@ -19,6 +19,12 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+
+  const total = () => good + neutral + bad
+
+  const average = () => (good - bad) / total()
+
+  const positive = () => `${(good / total() * 100).toFixed(1)} %`
 
   return (
     <>
@@ -30,9 +36,13 @@ const App = () => {
 
       <Header text='Statistics' />
 
-      <Statistic text='Good' clicks={good} />
-      <Statistic text='Neutral' clicks={neutral} />
-      <Statistic text='Bad' clicks={bad} />
+      <Statistic text='Good' stat={good} />
+      <Statistic text='Neutral' stat={neutral} />
+      <Statistic text='Bad' stat={bad} />
+
+      <Statistic text='All' stat={total()} />
+      <Statistic text='Average' stat={average()} />
+      <Statistic text='Positive' stat={positive()} />
     </>
   )
 }

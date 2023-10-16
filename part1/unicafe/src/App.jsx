@@ -18,6 +18,13 @@ const Statistics = ({ good, neutral, bad }) => {
   const total = () => good + neutral + bad
   const average = () => (good - bad) / total()
   const positive = () => `${(good / total() * 100).toFixed(1)} %`
+
+  if (total() === 0) {
+    return (
+      <p>No feedback given</p>
+    )
+  }
+
   return (
     <>
       <Statistic text='Good' stat={good} />
